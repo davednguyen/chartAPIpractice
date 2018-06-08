@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>HTTP Requests</title>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script>
+
+      google.charts.load('current', {'packages':['corechart']});
+      google.charts.setOnLoadCallback(getData);
+      function drawBasic(freshData) {
+        // var data = google.visualization.arrayToDataTable([["Year", "Billion BTUs"],["1980", 23456],["1981", 23456]]);
+        freshData.unshift(["year", "Billion BTUs"])
+        var data = google.visualization.arrayToDataTable(freshData);
+        var options = {
+        title: 'Energy Production in Florida',
+        chartArea: {width: '50%'},
+        hAxis: {
+        title: 'BTUs',
+        minValue: 0
+        }     
+      };
+        var chart = new google.visualization.BarChart(document.getElementById('chart_div'));
+        chart.draw(data, options);
+     }
+      let testData = "";
+
+      var practiceData = "";
+      var totalConsumption= "";
+      var renewData = "";
+      function getData()
+      {
+          // Create a new request object
+          let request = new XMLHttpRequest()
+          console.log("check")
+          // TODO: URL to contact goes here
+          // let requestUrl = "https://jsonplaceholder.typicode.com/users"
+          let requestUrl = "https://api.eia.gov/series/?api_key=3f166358025607d0b027843ee391b318&series_id=SEDS.REPRB.FL.A"
+          
+          //*********homework 10****************************//
+          // Documentation for the "FL Total Consumption" endpoint is here: 
+          //let requestUrl = "http://api.eia.gov/series/?api_key=3f166358025607d0b027843ee391b318&series_id=SEDS.TETCB.FL.A"
+          
+          //**********homework 10*****************************
+          //Documentation for the "FL Renewable Energy Production" endpoint is here:
+          //let requestUrl ="http://api.eia.gov/series/?api_key=3f166358025607d0b027843ee391b318&series_id=SEDS.REPRB.FL.A"
+
+          // Open a connection
+          request.open('GET', requestUrl, true)
+          // Callback for when the request completes
+          request.onload = function(){
+             console.log("Raw respones: ", request.response)
+            //testData = request.response;
+            //let parsed = JSON.parse(request.response)
+              // console.log(parsed[0])
+            console.log("response from server is: ", JSON.parse(request.response))
+            testData = JSON.parse(request.response);
+            console.log(testData.series[0].data)
+            let fresdb = testData.series[0].data;
+            drawBasic(fresdb);
+
+          // Callback for when there's an error
+          request.error = function(err)
+          {
+            console.log("error is: ", err)
+          }
+          }
+          // Send the request to the specified URL
+          request.send()           
+      }
+      //getData();
+    </script>
+  </head>
+  <body>
+  <div id="response"></div>
+  <div id="chart_div"></div>
+  </body>
+</html>
